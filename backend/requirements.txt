@@ -1,0 +1,9 @@
+fastapi==0.116.0
+uvicorn[standard]==0.35.0
+sqlalchemy==2.0.41
+asyncpg==0.30.0
+pydantic==2.11.7
+redis==5.2.1
+pydantic-settings==2.9.1
+python-dotenv==1.1.0
+google-play-scraper==1.2.7

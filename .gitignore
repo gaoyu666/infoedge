@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+backend/.venv/
+.venv/
+venv/
+
+# Build artifacts
+dist/
+build/
+coverage/
+tsconfig.tsbuildinfo
+
+# Runtime and test output
+*.log
+*.err
+*.out
+*.artifact.json
+test-results/
+screenshots/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# Local agent/tooling state
+.omx/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

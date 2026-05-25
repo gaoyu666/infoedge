@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InfoEdge 工作台高保真概念图</title>
+  <style>
+    :root {
+      --bg:      oklch(99% 0.002 240);
+      --surface: oklch(100% 0 0);
+      --fg:      oklch(18% 0.012 250);
+      --muted:   oklch(54% 0.012 250);
+      --border:  oklch(92% 0.005 250);
+      --accent:  oklch(58% 0.18 255);
+
+      --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+
+      --soft: oklch(96% 0.004 250);
+      --ink-2: oklch(30% 0.014 250);
+      --good: oklch(59% 0.16 150);
+      --warn: oklch(67% 0.16 75);
+      --bad: oklch(58% 0.18 25);
+      --blue-soft: color-mix(in oklch, var(--accent) 8%, white);
+      --good-soft: color-mix(in oklch, var(--good) 10%, white);
+      --warn-soft: color-mix(in oklch, var(--warn) 12%, white);
+      --bad-soft: color-mix(in oklch, var(--bad) 10%, white);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--bg); color: var(--fg); font-family: var(--font-body); }
+
+    body {
+      margin: 0;
+      min-width: 1180px;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, oklch(100% 0 0), var(--bg) 34rem),
+        var(--bg);
+      letter-spacing: 0;
+    }
+
+    input.page-state,
+    input.drawer-state {
+      position: fixed;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 264px minmax(760px, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      padding: 22px 18px;
+      border-right: 1px solid var(--border);
+      background: color-mix(in oklch, var(--surface) 92%, var(--soft));
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 4px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in oklch, var(--accent) 22%, var(--border));
+      border-radius: 8px;
+      color: var(--accent);
+      background: var(--blue-soft);
+      font: 750 13px/1 var(--font-display);
+    }
+
+    .brand strong,
+    .brand span {
+      display: block;
+    }
+
+    .brand strong {
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .brand span,
+    .rail-caption,
+    .muted,
+    .metric small,
+    .table-note,
+    .source-note,
+    .detail-meta,
+    .section-kicker,
+    .field label {
+      color: var(--muted);
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 4px;
+    }
+
+    .rail-caption {
+      padding: 0 10px 6px;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+
+    .nav-item {
+      min-height: 38px;
+      display: grid;
+      grid-template-columns: 20px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      border-radius: 8px;
+      color: var(--ink-2);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .nav-item:hover { background: var(--soft); }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--muted);
+      font: 650 10px/1 var(--mono);
+      background: var(--surface);
+    }
+
+    .nav-count {
+      color: var(--muted);
+      font: 600 11px/1 var(--mono);
+    }
+
+    .sidebar-card {
+      margin-top: auto;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .sidebar-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .health-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--good);
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .workspace {
+      min-width: 0;
+      padding: 22px 28px 42px;
+      transition: margin-right 180ms ease;
+    }
+
+    #detail-toggle:checked ~ .app .workspace { margin-right: 430px; }
+
+    .topbar {
+      height: 48px;
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 420px auto;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .breadcrumb {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .search {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 13px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+    }
+
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--fg);
+      font: inherit;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button,
+    .button,
+    .icon-button,
+    .segmented label,
+    .row-action,
+    .drawer-open {
+      font: inherit;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--fg);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+    }
+
+    .button,
+    .row-action,
+    .drawer-open {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 13px;
+      font-weight: 620;
+    }
+
+    .button.primary,
+    .row-action.primary,
+    .drawer-open.primary {
+      border-color: color-mix(in oklch, var(--accent) 38%, var(--border));
+      background: var(--fg);
+      color: white;
+    }
+
+    .button.subtle { background: var(--soft); }
+
+    .page { display: none; }
+
+    #page-intel:checked ~ .app .page-intel,
+    #page-pool:checked ~ .app .page-pool,
+    #page-actions:checked ~ .app .page-actions,
+    #page-brief:checked ~ .app .page-brief,
+    #page-sources:checked ~ .app .page-sources,
+    #page-agents:checked ~ .app .page-agents,
+    #page-settings:checked ~ .app .page-settings { display: block; }
+
+    #page-intel:checked ~ .app label[for="page-intel"],
+    #page-pool:checked ~ .app label[for="page-pool"],
+    #page-actions:checked ~ .app label[for="page-actions"],
+    #page-brief:checked ~ .app label[for="page-brief"],
+    #page-sources:checked ~ .app label[for="page-sources"],
+    #page-agents:checked ~ .app label[for="page-agents"],
+    #page-settings:checked ~ .app label[for="page-settings"] {
+      color: var(--fg);
+      background: var(--blue-soft);
+    }
+
+    #page-intel:checked ~ .app label[for="page-intel"] .nav-icon,
+    #page-pool:checked ~ .app label[for="page-pool"] .nav-icon,
+    #page-actions:checked ~ .app label[for="page-actions"] .nav-icon,
+    #page-brief:checked ~ .app label[for="page-brief"] .nav-icon,
+    #page-sources:checked ~ .app label[for="page-sources"] .nav-icon,
+    #page-agents:checked ~ .app label[for="page-agents"] .nav-icon,
+    #page-settings:checked ~ .app label[for="page-settings"] .nav-icon {
+      border-color: color-mix(in oklch, var(--accent) 30%, var(--border));
+      color: var(--accent);
+      background: var(--surface);
+    }
+
+    .page-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      margin-top: 6px;
+      font-family: var(--font-display);
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      font-size: 14px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+      text-wrap: pretty;
+    }
+
+    .section-kicker {
+      margin-bottom: 8px;
+      font: 650 11px/1 var(--mono);
+      text-transform: uppercase;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .metric,
+    .panel,
+    .notice,
+    .stage,
+    .source-row,
+    .settings-block {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .metric {
+      min-height: 96px;
+      padding: 14px;
+      display: grid;
+      align-content: space-between;
+    }
+
+    .metric strong {
+      font: 760 28px/1 var(--font-display);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric small {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.9fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .panel-head .muted {
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+
+    .priority-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .priority-row {
+      display: grid;
+      grid-template-columns: 72px minmax(220px, 1fr) 112px 100px 118px;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .priority-row:last-child { border-bottom: 0; }
+
+    .score-pill,
+    .tag,
+    .status,
+    .rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 680;
+    }
+
+    .score-pill {
+      width: 54px;
+      height: 28px;
+      color: var(--accent);
+      background: var(--blue-soft);
+      border: 1px solid color-mix(in oklch, var(--accent) 20%, var(--border));
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .score-pill.hot {
+      color: oklch(45% 0.17 75);
+      background: var(--warn-soft);
+      border-color: color-mix(in oklch, var(--warn) 26%, var(--border));
+    }
+
+    .title-block strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .title-block span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      min-height: 24px;
+      padding: 0 9px;
+      background: var(--soft);
+      color: var(--ink-2);
+      font-size: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .tag.good {
+      color: oklch(42% 0.13 150);
+      background: var(--good-soft);
+      border-color: color-mix(in oklch, var(--good) 24%, var(--border));
+    }
+
+    .tag.warn {
+      color: oklch(45% 0.15 75);
+      background: var(--warn-soft);
+      border-color: color-mix(in oklch, var(--warn) 24%, var(--border));
+    }
+
+    .tag.bad {
+      color: oklch(44% 0.16 25);
+      background: var(--bad-soft);
+      border-color: color-mix(in oklch, var(--bad) 24%, var(--border));
+    }
+
+    .evidence-mini {
+      display: grid;
+      gap: 6px;
+      color: var(--ink-2);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .rail-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .notice {
+      padding: 13px;
+      background: color-mix(in oklch, var(--surface) 76%, var(--soft));
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .notice p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .chart-card {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .chart-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px 0;
+    }
+
+    .chart {
+      width: 100%;
+      height: 178px;
+      display: block;
+    }
+
+    .axis-label {
+      fill: var(--muted);
+      font: 11px var(--mono);
+    }
+
+    .grid-line { stroke: var(--border); stroke-width: 1; }
+    .chart-line { fill: none; stroke: var(--accent); stroke-width: 2.4; }
+    .chart-line-muted { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 5; }
+    .chart-fill { fill: color-mix(in oklch, var(--accent) 9%, white); }
+
+    .segmented {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .segmented label {
+      min-height: 30px;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      border-color: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      background: transparent;
+    }
+
+    .segmented label.active,
+    .segmented label:hover {
+      color: var(--fg);
+      background: var(--soft);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      text-align: left;
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+
+    .data-table td {
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td { border-bottom: 0; }
+
+    .data-table td strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .progress {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--soft);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .kanban {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stage {
+      min-height: 560px;
+      padding: 12px;
+      background: color-mix(in oklch, var(--surface) 86%, var(--soft));
+    }
+
+    .stage header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .action-item {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      margin-bottom: 10px;
+    }
+
+    .action-item strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .action-item p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .brief-layout,
+    .source-layout,
+    .agent-layout,
+    .settings-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.9fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .brief-hero {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 22px;
+    }
+
+    .brief-hero h2 {
+      margin-top: 8px;
+      font-size: 26px;
+      line-height: 1.18;
+      max-width: 860px;
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .brief-stat {
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .brief-stat strong {
+      display: block;
+      margin-top: 6px;
+      font: 760 24px/1 var(--font-display);
+    }
+
+    .feed {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .feed-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feed-row:last-child { border-bottom: 0; }
+
+    .feed-row p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 5px;
+    }
+
+    .source-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-row {
+      padding: 13px;
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) 96px 80px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .source-row strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .freshness {
+      font: 650 12px/1 var(--mono);
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .agent-timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-row {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline-row:last-child { border-bottom: 0; }
+
+    .rank {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      background: var(--soft);
+      font-family: var(--mono);
+      font-size: 11px;
+      border-radius: 8px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      min-height: 82px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .field strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .settings-block {
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child { border-bottom: 0; }
+
+    .toggle {
+      width: 42px;
+      height: 24px;
+      padding: 3px;
+      border-radius: 999px;
+      background: var(--fg);
+      flex: 0 0 auto;
+    }
+
+    .toggle::before {
+      content: "";
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      transform: translateX(18px);
+    }
+
+    .inspector {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 430px;
+      height: 100vh;
+      overflow: auto;
+      border-left: 1px solid var(--border);
+      background: color-mix(in oklch, var(--surface) 94%, var(--soft));
+      transform: translateX(100%);
+      transition: transform 180ms ease;
+      z-index: 10;
+    }
+
+    #detail-toggle:checked ~ .app .inspector { transform: translateX(0); }
+
+    .inspector-head {
+      position: sticky;
+      top: 0;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in oklch, var(--surface) 88%, transparent);
+      backdrop-filter: blur(16px);
+    }
+
+    .close-drawer {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .inspector-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .detail-title {
+      display: grid;
+      gap: 10px;
+    }
+
+    .detail-title h2 { font-size: 22px; }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .score-box {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .score-box span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .score-box strong {
+      font: 760 18px/1 var(--font-display);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .detail-section {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    .detail-section h3 {
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .detail-section p,
+    .detail-section li {
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .detail-section ul,
+    .detail-section ol {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 92px 1fr 36px;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .drawer-actions {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--border);
+      background: color-mix(in oklch, var(--surface) 88%, transparent);
+      backdrop-filter: blur(16px);
+    }
+
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+    .right { text-align: right; }
+    .nowrap { white-space: nowrap; }
+
+    @media (max-width: 1500px) {
+      body { min-width: 1040px; }
+      #detail-toggle:checked ~ .app .workspace { margin-right: 0; }
+      .inspector { box-shadow: -30px 0 70px color-mix(in oklch, var(--fg) 12%, transparent); }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kanban { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <input class="page-state" type="radio" name="page" id="page-intel" checked>
+  <input class="page-state" type="radio" name="page" id="page-pool">
+  <input class="page-state" type="radio" name="page" id="page-actions">
+  <input class="page-state" type="radio" name="page" id="page-brief">
+  <input class="page-state" type="radio" name="page" id="page-sources">
+  <input class="page-state" type="radio" name="page" id="page-agents">
+  <input class="page-state" type="radio" name="page" id="page-settings">
+  <input class="drawer-state" type="checkbox" id="detail-toggle">
+
+  <div class="app">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand">
+        <div class="brand-mark">IE</div>
+        <div>
+          <strong>InfoEdge</strong>
+          <span>商业情报决策工作台</span>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="rail-caption">决策流</div>
+        <label class="nav-item" for="page-intel"><span class="nav-icon">D</span><span>今日情报</span><span class="nav-count">3</span></label>
+        <label class="nav-item" for="page-pool"><span class="nav-icon">O</span><span>机会池</span><span class="nav-count">117</span></label>
+        <label class="nav-item" for="page-actions"><span class="nav-icon">A</span><span>行动台</span><span class="nav-count">12</span></label>
+        <label class="nav-item" for="page-brief"><span class="nav-icon">B</span><span>每日简报</span><span class="nav-count">08:00</span></label>
+      </div>
+
+      <div class="nav-group">
+        <div class="rail-caption">运营层</div>
+        <label class="nav-item" for="page-sources"><span class="nav-icon">S</span><span>数据源</span><span class="nav-count">24</span></label>
+        <label class="nav-item" for="page-agents"><span class="nav-icon">G</span><span>智能体</span><span class="nav-count">7</span></label>
+        <label class="nav-item" for="page-settings"><span class="nav-icon">P</span><span>设置</span><span class="nav-count"></span></label>
+      </div>
+
+      <div class="sidebar-card">
+        <strong>本地运行状态</strong>
+        <div class="health-line"><span><i class="health-dot"></i>采集队列正常</span><span class="mono">82%</span></div>
+        <div class="health-line"><span>上次同步</span><span class="mono">12 分钟前</span></div>
+        <div class="health-line"><span>异常来源</span><span class="mono">3</span></div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb">工作台 / 商业情报 / 2026-05-12</div>
+        <div class="search">
+          <span class="mono">⌘K</span>
+          <input value="" placeholder="搜索信号、机会、执行项、数据源">
+        </div>
+        <div class="top-actions">
+          <label class="icon-button" for="detail-toggle" title="机会详情">▥</label>
+          <button class="icon-button" title="通知">○</button>
+          <button class="icon-button" title="账户">G</button>
+        </div>
+      </header>
+
+      <section class="page page-intel">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Daily intelligence</div>
+            <h1>今天先处理 3 个高可信机会</h1>
+            <p class="lead">系统从 24 个来源合成 184 条信号，压缩为 117 个可判断机会。默认只把“窗口期明确、证据可追溯、下一步可执行”的机会推到首屏。</p>
+          </div>
+          <div class="top-actions">
+            <button class="button subtle">生成新简报</button>
+            <button class="button primary">运行采集</button>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric"><small>今日机会 <span class="mono">+117</span></small><strong>117</strong><small>Top 3 已进入验证队列</small></div>
+          <div class="metric"><small>可执行窗口 <span class="mono">72h</span></small><strong>6</strong><small>按低风险和小预算优先</small></div>
+          <div class="metric"><small>数据源健康 <span class="mono">24/27</span></small><strong>82%</strong><small>3 个来源需要处理</small></div>
+          <div class="metric"><small>历史胜率 <span class="mono">90d</span></small><strong>62%</strong><small>样本 38 个执行复盘</small></div>
+        </div>
+
+        <div class="main-grid">
+          <div>
+            <div class="panel">
+              <div class="panel-head">
+                <h2>优先处理队列</h2>
+                <span class="muted">按 OCI、风险、窗口期综合排序</span>
+              </div>
+              <div class="priority-list">
+                <div class="priority-row">
+                  <span class="score-pill hot">S-92</span>
+                  <div class="title-block">
+                    <strong>TikTok 美区 MagSafe 折叠充电宝</strong>
+                    <span>跨境爆品推进 / 供应链价格差 / 72 小时窗口</span>
+                    <div class="tag-row"><span class="tag good">验证 88</span><span class="tag">拥挤 23</span><span class="tag warn">预算 8k-20k</span></div>
+                  </div>
+                  <div class="evidence-mini"><strong>为什么现在</strong><span>TikTok 播放升温，1688 搜索仍低位。</span></div>
+                  <div><span class="tag good">低风险</span></div>
+                  <label class="drawer-open primary" for="detail-toggle">看详情</label>
+                </div>
+                <div class="priority-row">
+                  <span class="score-pill">A-86</span>
+                  <div class="title-block">
+                    <strong>开源项目产品化：career-ops</strong>
+                    <span>GitHub 热度异常 / 内容工作流 / 48 小时验证</span>
+                    <div class="tag-row"><span class="tag good">Stars 40,712</span><span class="tag">Forks 8,430</span></div>
+                  </div>
+                  <div class="evidence-mini"><strong>为什么现在</strong><span>开发者圈已验证，商业化内容缺口明显。</span></div>
+                  <div><span class="tag">中风险</span></div>
+                  <label class="drawer-open" for="detail-toggle">看详情</label>
+                </div>
+                <div class="priority-row">
+                  <span class="score-pill">A-81</span>
+                  <div class="title-block">
+                    <strong>Google Trends：injury lawyer 搜索套利</strong>
+                    <span>搜索需求验证 / 北美本地服务 / 7 天窗口</span>
+                    <div class="tag-row"><span class="tag warn">CPC 高</span><span class="tag">内容可复制</span></div>
+                  </div>
+                  <div class="evidence-mini"><strong>为什么现在</strong><span>搜索量陡增，但中文内容供给不足。</span></div>
+                  <div><span class="tag bad">高成本</span></div>
+                  <label class="drawer-open" for="detail-toggle">看详情</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <header><h2>24 小时信号与机会转化</h2><span class="muted mono">刷新 12 分钟前</span></header>
+              <svg class="chart" viewBox="0 0 760 178" role="img" aria-label="信号趋势图">
+                <path class="grid-line" d="M52 28H730M52 72H730M52 116H730M52 152H730"></path>
+                <path class="grid-line" d="M52 20V152M222 20V152M392 20V152M562 20V152M730 20V152"></path>
+                <path class="chart-fill" d="M52 134 C120 116 160 90 222 84 C296 77 322 42 392 48 C462 54 482 84 562 74 C632 64 680 44 730 28 L730 152 L52 152 Z"></path>
+                <path class="chart-line" d="M52 134 C120 116 160 90 222 84 C296 77 322 42 392 48 C462 54 482 84 562 74 C632 64 680 44 730 28"></path>
+                <path class="chart-line-muted" d="M52 144 C150 138 214 128 310 118 C420 106 498 110 610 96 C668 90 704 80 730 72"></path>
+                <text class="axis-label" x="52" y="169">00:00</text>
+                <text class="axis-label" x="222" y="169">06:00</text>
+                <text class="axis-label" x="392" y="169">12:00</text>
+                <text class="axis-label" x="562" y="169">18:00</text>
+                <text class="axis-label" x="698" y="169">现在</text>
+              </svg>
+            </div>
+          </div>
+
+          <aside class="rail-list">
+            <div class="panel">
+              <div class="panel-head"><h2>今日待办</h2><span class="muted">3 项</span></div>
+              <div class="rail-list">
+                <div class="notice"><strong>确认 MagSafe 利润区间</strong><p>用 1688、TikTok Shop、Amazon 三方价格确认毛利是否大于 38%。</p></div>
+                <div class="notice"><strong>补采 Reddit / r/ecommerce</strong><p>当前对爆品负面反馈覆盖不足，先补风险再执行。</p></div>
+                <div class="notice"><strong>生成首轮投放脚本</strong><p>只生成 3 条低成本素材脚本，不进入重资产投放。</p></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>系统提示</h2><span class="muted">可行动状态</span></div>
+              <div class="rail-list">
+                <div class="notice"><strong>后端接口未连接时不再卡住</strong><p>页面应显示最近一次缓存、重试按钮和数据源配置入口。</p></div>
+                <div class="notice"><strong>3 个高价值来源待配置</strong><p>TikTok / Meta Ads / Amazon SP-API 会影响跨境信号完整度。</p></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page page-pool">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Opportunity pool</div>
+            <h1>机会池按“能不能做”排序</h1>
+            <p class="lead">列表不再展示一堆同权卡片，而是把商人真正要判断的字段放在同一行：窗口期、验证分、拥挤度、风险、预算和下一步。</p>
+          </div>
+          <div class="segmented">
+            <label class="active">全部</label><label>S/A</label><label>低风险</label><label>待验证</label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>保存视图：低风险可执行</h2>
+            <span class="muted mono">117 条机会 / 6 条优先</span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:72px">OCI</th>
+                <th>机会</th>
+                <th style="width:120px">套利类型</th>
+                <th style="width:90px">窗口</th>
+                <th style="width:90px">验证</th>
+                <th style="width:90px">拥挤</th>
+                <th style="width:90px">风险</th>
+                <th style="width:110px">预算</th>
+                <th style="width:116px">动作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="score-pill hot">S-92</span></td>
+                <td><strong>TikTok 美区 MagSafe 折叠充电宝</strong><span class="table-note">海外传播快，国内供给关键词仍分散。</span></td>
+                <td>价格差</td>
+                <td class="mono">72h</td>
+                <td><span class="tag good">88</span></td>
+                <td><span class="tag">23</span></td>
+                <td><span class="tag good">低</span></td>
+                <td class="mono">8k-20k</td>
+                <td><label class="row-action primary" for="detail-toggle">详情</label></td>
+              </tr>
+              <tr>
+                <td><span class="score-pill">A-86</span></td>
+                <td><strong>开源项目产品化：career-ops</strong><span class="table-note">GitHub 热度已经验证，非技术用户需求未被翻译。</span></td>
+                <td>认知差</td>
+                <td class="mono">48h</td>
+                <td><span class="tag good">81</span></td>
+                <td><span class="tag">34</span></td>
+                <td><span class="tag">中</span></td>
+                <td class="mono">3k-15k</td>
+                <td><label class="row-action" for="detail-toggle">详情</label></td>
+              </tr>
+              <tr>
+                <td><span class="score-pill">A-83</span></td>
+                <td><strong>东南亚直播电商工具链增长</strong><span class="table-note">卖家圈需求增长，工具服务仍以英文为主。</span></td>
+                <td>供需差</td>
+                <td class="mono">7d</td>
+                <td><span class="tag good">79</span></td>
+                <td><span class="tag">41</span></td>
+                <td><span class="tag">中</span></td>
+                <td class="mono">20k+</td>
+                <td><label class="row-action" for="detail-toggle">详情</label></td>
+              </tr>
+              <tr>
+                <td><span class="score-pill">B-74</span></td>
+                <td><strong>SEC Form D：供应链软件连续融资</strong><span class="table-note">投资圈信号清晰，但面向普通商人的变现路径弱。</span></td>
+                <td>投资跟踪</td>
+                <td class="mono">30d</td>
+                <td><span class="tag">67</span></td>
+                <td><span class="tag bad">62</span></td>
+                <td><span class="tag">中</span></td>
+                <td class="mono">信息型</td>
+                <td><label class="row-action" for="detail-toggle">详情</label></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page page-actions">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Action board</div>
+            <h1>行动台按业务阶段推进</h1>
+            <p class="lead">看板不再使用 pending / completed 这类工程状态，而是按商人的判断流程组织：待判断、验证中、可执行、复盘。</p>
+          </div>
+          <button class="button primary">新建验证计划</button>
+        </div>
+        <div class="kanban">
+          <div class="stage">
+            <header><h2>待判断</h2><span class="muted mono">4</span></header>
+            <div class="action-item"><strong>injury lawyer 搜索套利</strong><p>先确认获客成本，不满足阈值就归档。</p><div class="progress"><span style="width:22%"></span></div></div>
+            <div class="action-item"><strong>SEC Form D 供应链软件</strong><p>需要补充可变现路径和目标客户。</p><div class="progress"><span style="width:18%"></span></div></div>
+          </div>
+          <div class="stage">
+            <header><h2>验证中</h2><span class="muted mono">5</span></header>
+            <div class="action-item"><strong>MagSafe 折叠充电宝</strong><p>利润区间、负面评论、首批供应链三项并行。</p><div class="progress"><span style="width:58%"></span></div></div>
+            <div class="action-item"><strong>career-ops 产品化</strong><p>48 小时内验证是否有人愿意收藏或付费。</p><div class="progress"><span style="width:46%"></span></div></div>
+          </div>
+          <div class="stage">
+            <header><h2>可执行</h2><span class="muted mono">2</span></header>
+            <div class="action-item"><strong>复刻项目能力服务包</strong><p>成功标准：24 小时内拿到 20 次收藏或 3 次咨询。</p><div class="progress"><span style="width:76%"></span></div></div>
+          </div>
+          <div class="stage">
+            <header><h2>复盘</h2><span class="muted mono">1</span></header>
+            <div class="action-item"><strong>AI 视频工具替代品追踪</strong><p>执行结论：需求成立，但渠道成本过高。</p><div class="progress"><span style="width:100%"></span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page page-brief">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Daily brief</div>
+            <h1>每日简报面向行动，而不是堆信息</h1>
+          </div>
+          <button class="button primary">导出给团队</button>
+        </div>
+        <div class="brief-layout">
+          <div>
+            <div class="brief-hero">
+              <div class="section-kicker">2026-05-12 / DailyBriefAgent</div>
+              <h2>今天有 6 个可优先验证机会，先看「MagSafe 折叠充电宝」和「career-ops 产品化」。</h2>
+              <div class="brief-grid">
+                <div class="brief-stat"><span class="muted">24h 信号</span><strong>184</strong></div>
+                <div class="brief-stat"><span class="muted">24h 机会</span><strong>117</strong></div>
+                <div class="brief-stat"><span class="muted">异常来源</span><strong>3</strong></div>
+              </div>
+            </div>
+            <div class="panel" style="margin-top:14px">
+              <div class="panel-head"><h2>新增信号摘要</h2><span class="muted">按圈层归并</span></div>
+              <div class="feed">
+                <div class="feed-row"><strong>电商</strong><div><strong>TikTok 美区 MagSafe 充电宝</strong><p>传播速度快，供应链关键词仍未集中，建议先验证毛利。</p></div><span class="tag warn">20 条</span></div>
+                <div class="feed-row"><strong>AI</strong><div><strong>GitHub 自动化项目热度异常</strong><p>开发者圈已验证，商业化解释和中文落地内容不足。</p></div><span class="tag">47 条</span></div>
+                <div class="feed-row"><strong>投资</strong><div><strong>供应链软件融资连续出现</strong><p>投资圈动作集中，但普通商人变现路径需要继续拆解。</p></div><span class="tag">32 条</span></div>
+              </div>
+            </div>
+          </div>
+          <aside class="rail-list">
+            <div class="panel">
+              <div class="panel-head"><h2>风险提醒</h2><span class="muted">2 条</span></div>
+              <div class="notice"><strong>跨境信号的负面评论覆盖不足</strong><p>Reddit 和 Amazon Review 未补齐前，不建议进入大额采购。</p></div>
+              <div class="notice"><strong>数据源配置缺口会降低置信度</strong><p>高价值商业来源未配置时，系统应在机会详情显式标记。</p></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h2>简报历史</h2><span class="muted">30 天</span></div>
+              <div class="feed">
+                <div class="feed-row"><span class="mono">05-12</span><div><strong>每日行动简报</strong><p>6 个优先验证机会。</p></div><span></span></div>
+                <div class="feed-row"><span class="mono">05-11</span><div><strong>今日简报</strong><p>3 个可执行机会，1 个异常来源。</p></div><span></span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page page-sources">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Source operations</div>
+            <h1>数据源页面要让异常可处理</h1>
+            <p class="lead">用户不需要看到技术报错堆栈，而需要知道哪些来源影响决策、是否可重试、是否需要配置、对机会评分有什么影响。</p>
+          </div>
+          <button class="button primary">同步状态</button>
+        </div>
+        <div class="source-layout">
+          <div class="panel">
+            <div class="panel-head"><h2>来源健康</h2><span class="muted mono">24 成功 / 3 异常</span></div>
+            <div class="source-grid">
+              <div class="source-row"><div><strong>TikTok 趋势</strong><span class="source-note">跨境爆品核心来源，影响价格差机会。</span></div><span class="tag good">健康</span><span class="freshness">12m</span></div>
+              <div class="source-row"><div><strong>Amazon SP-API</strong><span class="source-note">需要授权，缺失时 ROI 区间降级。</span></div><span class="tag warn">待配置</span><span class="freshness">--</span></div>
+              <div class="source-row"><div><strong>HackerNews</strong><span class="source-note">技术圈早期信号，当前请求失败。</span></div><span class="tag bad">异常</span><span class="freshness">2h</span></div>
+              <div class="source-row"><div><strong>GitHub Trending</strong><span class="source-note">开源项目产品化信号来源。</span></div><span class="tag good">健康</span><span class="freshness">8m</span></div>
+            </div>
+          </div>
+          <aside class="rail-list">
+            <div class="notice"><strong>建议交互</strong><p>异常来源旁边直接提供“重试”“配置密钥”“查看影响机会”，不要只显示 Failed to fetch。</p></div>
+            <div class="notice"><strong>评分影响</strong><p>Amazon SP-API 未连接时，跨境电商机会的 ROI 置信度下降 18%。</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page page-agents">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Agent orchestration</div>
+            <h1>智能体页面服务于治理和成本控制</h1>
+            <p class="lead">这里不做拟人化展示，而是清楚地说明每个智能体的职责、频率、预算、失败策略和最近一次产出。</p>
+          </div>
+          <button class="button primary">保存分配</button>
+        </div>
+        <div class="agent-layout">
+          <div class="panel">
+            <div class="panel-head"><h2>智能体分配</h2><span class="muted mono">7 agents</span></div>
+            <table class="data-table">
+              <thead><tr><th>智能体</th><th>职责</th><th>频率</th><th>预算</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td><strong>SourceCollector</strong></td><td>采集原始来源并标记新鲜度</td><td class="mono">15m</td><td class="mono">¥120/d</td><td><span class="tag good">运行中</span></td></tr>
+                <tr><td><strong>OpportunityScoring</strong></td><td>生成 OCI 与风险标签</td><td class="mono">30m</td><td class="mono">¥180/d</td><td><span class="tag good">正常</span></td></tr>
+                <tr><td><strong>DailyBrief</strong></td><td>每天 08:00 输出行动简报</td><td class="mono">1d</td><td class="mono">¥40/d</td><td><span class="tag good">已完成</span></td></tr>
+                <tr><td><strong>RiskAgent</strong></td><td>反证、负面信号、止损阈值</td><td class="mono">on demand</td><td class="mono">¥80/d</td><td><span class="tag warn">等待补源</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="panel">
+            <div class="panel-head"><h2>处理链路</h2><span class="muted">最近一次</span></div>
+            <div class="agent-timeline">
+              <div class="timeline-row"><span class="rank">1</span><div><strong>采集</strong><p class="muted">24 个来源返回新数据</p></div><span class="tag good">完成</span></div>
+              <div class="timeline-row"><span class="rank">2</span><div><strong>归一</strong><p class="muted">184 条信号合并为 117 个机会</p></div><span class="tag good">完成</span></div>
+              <div class="timeline-row"><span class="rank">3</span><div><strong>评分</strong><p class="muted">6 条进入优先验证队列</p></div><span class="tag good">完成</span></div>
+              <div class="timeline-row"><span class="rank">4</span><div><strong>反证</strong><p class="muted">3 条缺少负面反馈来源</p></div><span class="tag warn">降级</span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page page-settings">
+        <div class="page-head">
+          <div>
+            <div class="section-kicker">Preferences</div>
+            <h1>设置要影响机会排序，而不是孤立配置</h1>
+            <p class="lead">商人的资金、风险偏好和执行能力应该直接影响默认首页、机会排序和行动建议。</p>
+          </div>
+        </div>
+        <div class="settings-layout">
+          <div>
+            <div class="settings-block">
+              <div class="panel-head"><h2>商人档案</h2><span class="muted">用于个性化排序</span></div>
+              <div class="field-grid">
+                <div class="field"><label>资金范围</label><strong>¥10,000 - ¥100,000</strong></div>
+                <div class="field"><label>主要变现路径</label><strong>跨境电商、内容套利、工具产品化</strong></div>
+                <div class="field"><label>风险偏好</label><strong>低到中风险，优先短周期验证</strong></div>
+                <div class="field"><label>团队能力</label><strong>1-3 人，可做内容、采购和轻量投放</strong></div>
+              </div>
+            </div>
+            <div class="settings-block">
+              <div class="panel-head"><h2>排序规则</h2><span class="muted">默认权重</span></div>
+              <div class="toggle-row"><div><strong>优先低风险机会</strong><p class="muted">风险高于中等时默认降权。</p></div><span class="toggle"></span></div>
+              <div class="toggle-row"><div><strong>优先 72 小时窗口</strong><p class="muted">时间窗口明确时进入今日情报。</p></div><span class="toggle"></span></div>
+              <div class="toggle-row"><div><strong>隐藏高预算机会</strong><p class="muted">预算超过 ¥100,000 时默认不进首屏。</p></div><span class="toggle"></span></div>
+            </div>
+          </div>
+          <aside class="panel">
+            <div class="panel-head"><h2>合规与提示</h2><span class="muted">必须可见</span></div>
+            <div class="rail-list">
+              <div class="notice"><strong>机会不是收益承诺</strong><p>所有机会详情必须展示样本、来源、置信度和反证条件。</p></div>
+              <div class="notice"><strong>执行前必须有止损阈值</strong><p>行动台创建时默认要求成功标准与失败标准。</p></div>
+              <div class="notice"><strong>数据源缺失要影响评分</strong><p>任何待配置来源都要明确说明对机会排序的影响。</p></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <aside class="inspector" aria-label="机会详情抽屉">
+      <div class="inspector-head">
+        <div>
+          <div class="section-kicker">Selected opportunity</div>
+          <strong>TikTok 美区 MagSafe 折叠充电宝</strong>
+        </div>
+        <label class="close-drawer" for="detail-toggle">×</label>
+      </div>
+      <div class="inspector-body">
+        <div class="detail-title">
+          <span class="score-pill hot">S-92</span>
+          <h2>TikTok 爆品热度上升，1688 供给关键词仍未集中</h2>
+          <p class="detail-meta">价格差 / 跨境电商 / 72 小时验证窗口 / 建议预算 ¥8,000-20,000</p>
+        </div>
+        <div class="score-strip">
+          <div class="score-box"><span>验证分</span><strong>88</strong></div>
+          <div class="score-box"><span>拥挤度</span><strong>23</strong></div>
+          <div class="score-box"><span>风险</span><strong>低</strong></div>
+        </div>
+        <div class="detail-section">
+          <h3>结论</h3>
+          <p>TikTok 美区关于折叠式 MagSafe 充电宝的内容播放和收藏正在上升，但中文供应链关键词仍分散，说明机会可能处于早期窗口。先做小批量样品和素材验证，不建议直接重仓采购。</p>
+        </div>
+        <div class="detail-section">
+          <h3>证据链</h3>
+          <ul>
+            <li>TikTok 相关视频互动在 24 小时内连续上升，评论集中在“旅行便携”和“桌面支架”。</li>
+            <li>1688 同类商品存在，但标题关键词分散，搜索热度未集中。</li>
+            <li>Amazon 同类产品价格带高于 1688 供给价，初步毛利区间可验证。</li>
+            <li>Reddit 负面反馈覆盖不足，执行前需要补采评论和售后风险。</li>
+          </ul>
+        </div>
+        <div class="detail-section">
+          <h3>OCI 拆分</h3>
+          <div class="bar-list">
+            <div class="bar-row"><span>时间差</span><div class="progress"><span style="width:92%"></span></div><span class="mono">92</span></div>
+            <div class="bar-row"><span>价格差</span><div class="progress"><span style="width:84%"></span></div><span class="mono">84</span></div>
+            <div class="bar-row"><span>供需差</span><div class="progress"><span style="width:78%"></span></div><span class="mono">78</span></div>
+            <div class="bar-row"><span>可操作</span><div class="progress"><span style="width:88%"></span></div><span class="mono">88</span></div>
+          </div>
+        </div>
+        <div class="detail-section">
+          <h3>下一步验证</h3>
+          <ol>
+            <li>确认 3 个供货商样品价、发货周期和最小起订量。</li>
+            <li>抓取 Amazon / Reddit 负面评论，标记电池安全和售后风险。</li>
+            <li>生成 3 条短视频素材脚本，用低预算验证收藏和私信意向。</li>
+          </ol>
+        </div>
+      </div>
+      <div class="drawer-actions">
+        <button class="button primary">加入行动台</button>
+        <button class="button">生成验证计划</button>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "infoedge-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "accept:opportunity-actions:api": "node scripts/opportunity_action_summary_acceptance.mjs",
+    "accept:buttons:api": "node scripts/ui_button_acceptance.mjs",
+    "accept:buttons:ui": "npx -y playwright@1.59.1 test scripts/ui_button_acceptance.spec.mjs --reporter=line",
+    "accept:buttons:browser": "npx -y -p playwright@1.59.1 node scripts/ui_button_acceptance.browser.mjs",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "recharts": "^3.6.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "playwright": "^1.59.1"
+  }
+}
