@@ -1,0 +1,43 @@
+name: Source connector
+description: Propose or improve a data-source connector.
+title: "[Connector]: "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: source
+    attributes:
+      label: Source name
+      placeholder: NASA EONET, NOAA SWPC, Product Hunt API
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: Access type
+      options:
+        - Public
+        - Requires API key or token
+        - Requires account or vendor approval
+        - Restricted or unclear
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Why it matters
+      description: Explain the signal, users, or ecosystem value.
+    validations:
+      required: true
+  - type: textarea
+    id: schema
+    attributes:
+      label: Expected normalized fields
+      placeholder: IDs, URLs, timestamps, metrics, payload fields.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety checks
+      options:
+        - label: This source has public documentation or clear authorization terms.
+        - label: No private credentials, cookies, or paid data dumps will be committed.
+        - label: Tests can run offline with fixtures.

@@ -16,7 +16,8 @@ Current repository signals:
 - React/Vite frontend and FastAPI backend.
 - Source registry for roughly 150 data-source entries.
 - Public roadmap, contribution guide, security policy, CI workflow, issues, release, and static demo.
-- Offline connector tests for source registration and payload normalization.
+- Architecture documentation and GitHub issue/PR templates for external contributors.
+- Offline connector tests for source registration, payload normalization, and malformed payload handling.
 
 ## How Codex and API Credits Would Be Used
 
@@ -35,6 +36,6 @@ Human maintainers remain responsible for final review, merge, release, and data-
 
 - Document PostgreSQL and Redis local setup.
 - Add connector health status and refresh metadata.
-- Expand connector normalization tests.
+- Continue expanding connector normalization fixtures as new sources are added.
 - Improve dashboard empty states and backend offline messaging.
 - Add deployment and demo guidance.

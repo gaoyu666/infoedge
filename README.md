@@ -1,5 +1,11 @@
 # InfoEdge
 
+[![CI](https://github.com/gaoyu666/infoedge/actions/workflows/ci.yml/badge.svg)](https://github.com/gaoyu666/infoedge/actions/workflows/ci.yml)
+[![Deploy Demo](https://github.com/gaoyu666/infoedge/actions/workflows/pages.yml/badge.svg)](https://github.com/gaoyu666/infoedge/actions/workflows/pages.yml)
+[![Latest release](https://img.shields.io/github/v/release/gaoyu666/infoedge)](https://github.com/gaoyu666/infoedge/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-online-brightgreen)](https://gaoyu666.github.io/infoedge/)
+
 InfoEdge is an open-source intelligence workbench for discovering trend signals, scoring business opportunities, and monitoring risk from public and authorized data sources.
 
 The project combines a React/Vite frontend with a FastAPI backend. It organizes public feeds, optional API-based sources, third-party collectors, and restricted data-source placeholders into one workflow for opportunity research.
@@ -55,7 +61,8 @@ The frontend can run before the backend is configured. Empty-state dashboards ar
 |   |-- tests/                 # Backend tests
 |   |-- .env.example           # Backend environment template
 |   `-- requirements.txt       # Backend dependencies
-|-- docs/assets/               # Screenshots and public documentation assets
+|-- docs/                      # Architecture, deployment, backend, and OSS notes
+|-- .github/                   # CI, Pages deployment, and collaboration templates
 |-- scripts/                   # Frontend/API acceptance scripts
 |-- package.json               # Frontend dependencies and scripts
 |-- PRD_CN.md                  # Chinese product requirements draft
@@ -206,7 +213,7 @@ npm run accept:buttons:api
 
 The near-term roadmap is tracked in [ROADMAP.md](ROADMAP.md). Current priorities are connector coverage, backend reliability, UI empty-state clarity, and maintainable contributor workflows.
 
-For deployment details, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). For local backend services, see [docs/LOCAL_BACKEND.md](docs/LOCAL_BACKEND.md).
+For architecture details, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). For deployment details, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). For local backend services, see [docs/LOCAL_BACKEND.md](docs/LOCAL_BACKEND.md).
 
 ## Contributing
 

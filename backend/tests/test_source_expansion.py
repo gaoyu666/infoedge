@@ -73,6 +73,35 @@ class SourceExpansionTests(unittest.TestCase):
         self.assertEqual(records[0].metrics["rank"], 1)
         self.assertEqual(records[0].metrics["hotness"], 12345)
 
+    def test_trendradar_hotlist_payload_handles_edges(self) -> None:
+        from app.services.sources.hotlists import TrendRadarHotlistConnector
+
+        connector = TrendRadarHotlistConnector(
+            name="TrendRadar: Zhihu Hot",
+            platform_id="zhihu",
+            platform_name="Zhihu",
+        )
+        records = connector.records_from_payload(
+            {
+                "status": "cache",
+                "items": [
+                    "not-a-dict",
+                    {"title": "", "hot": "999"},
+                    {"title": "<b>Agent tools</b> adoption", "mobileUrl": "https://m.example.com/a", "hot": "1.2k"},
+                    {"title": "Ignored by limit", "hot": "2m"},
+                ],
+            },
+            limit=3,
+        )
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0].title, "Agent tools adoption")
+        self.assertEqual(records[0].url, "https://m.example.com/a")
+        self.assertEqual(records[0].metrics["hotness"], 1200)
+
+        with self.assertRaisesRegex(RuntimeError, "status=error"):
+            connector.records_from_payload({"status": "error", "items": []}, limit=5)
+
     def test_world_public_json_connectors_normalize_payloads(self) -> None:
         from app.services.sources.public_intel import (
             CelesTrakSatelliteConnector,
@@ -135,6 +164,63 @@ class SourceExpansionTests(unittest.TestCase):
             limit=1,
         )
         self.assertEqual(swpc_records[0].metrics["kp_index"], 1.33)
+
+    def test_world_public_json_connectors_handle_malformed_payloads(self) -> None:
+        from app.services.sources.public_intel import (
+            CelesTrakSatelliteConnector,
+            NasaEonetConnector,
+            NoaaSwpcConnector,
+            NoaaWeatherAlertsConnector,
+        )
+
+        eonet = NasaEonetConnector()
+        eonet_records = eonet.records_from_payload(
+            {
+                "events": [
+                    {"id": "skip-empty-title", "title": ""},
+                    {"id": "fallback-category", "title": "Flood watch", "geometry": [{"date": "not-a-date"}]},
+                ]
+            },
+            limit=5,
+        )
+        self.assertEqual(len(eonet_records), 1)
+        self.assertEqual(eonet_records[0].payload["category"], "natural_event")
+        self.assertIsNone(eonet_records[0].published_at)
+
+        weather = NoaaWeatherAlertsConnector()
+        weather_records = weather.records_from_payload(
+            {
+                "features": [
+                    {"id": "skip-empty-event", "properties": {}},
+                    {"id": "unknown-severity", "properties": {"event": "Advisory", "severity": "Mystery"}},
+                ]
+            },
+            limit=5,
+        )
+        self.assertEqual(len(weather_records), 1)
+        self.assertEqual(weather_records[0].metrics["severity_score"], 1)
+
+        swpc = NoaaSwpcConnector()
+        swpc_records = swpc.records_from_payload(
+            [["time_tag", "Kp"], ["2026-05-24T09:00:00", "bad-number"], ["2026-05-24T12:00:00", "4.67"]],
+            limit=2,
+        )
+        self.assertEqual([record.metrics["kp_index"] for record in swpc_records], [4.67, 0.0])
+
+        satellites = CelesTrakSatelliteConnector()
+        satellite_records = satellites.records_from_satcat_csv(
+            "\n".join(
+                [
+                    "OBJECT_NAME,NORAD_CAT_ID,OBJECT_TYPE,LAUNCH_DATE,DECAY_DATE",
+                    "DEBRIS,1,DEB,2020-01-01,",
+                    "DECAYED PAYLOAD,2,PAY,2020-01-01,2021-01-01",
+                    "ACTIVE PAYLOAD,3,PAY,2020-01-01,",
+                    "ACTIVE ROCKET BODY,4,R/B,2020-01-01,",
+                ]
+            ),
+            limit=5,
+        )
+        self.assertEqual([record.source_item_id for record in satellite_records], ["3", "4"])
 
 
 if __name__ == "__main__":
