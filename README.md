@@ -4,6 +4,25 @@ InfoEdge is an open-source intelligence workbench for discovering trend signals,
 
 The project combines a React/Vite frontend with a FastAPI backend. It organizes public feeds, optional API-based sources, third-party collectors, and restricted data-source placeholders into one workflow for opportunity research.
 
+![InfoEdge workbench screenshot](docs/assets/infoedge-workbench.png)
+
+## Demo
+
+Run the local workbench with:
+
+```bash
+npm install
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+The frontend can run before the backend is configured. Empty-state dashboards are expected until the FastAPI service and data connectors are running.
+
 ## Features
 
 - Source dashboard for public, gated, third-party, and restricted sources.
@@ -22,16 +41,17 @@ The project combines a React/Vite frontend with a FastAPI backend. It organizes 
 
 ```text
 .
-├── src/                       # React frontend
-├── backend/
-│   ├── app/                   # FastAPI app, APIs, services, data models
-│   ├── tests/                 # Backend tests
-│   ├── .env.example           # Backend environment template
-│   └── requirements.txt       # Backend dependencies
-├── scripts/                   # Frontend/API acceptance scripts
-├── package.json               # Frontend dependencies and scripts
-├── PRD_CN.md                  # Chinese product requirements draft
-└── README.md
+|-- src/                       # React frontend
+|-- backend/
+|   |-- app/                   # FastAPI app, APIs, services, data models
+|   |-- tests/                 # Backend tests
+|   |-- .env.example           # Backend environment template
+|   `-- requirements.txt       # Backend dependencies
+|-- docs/assets/               # Screenshots and public documentation assets
+|-- scripts/                   # Frontend/API acceptance scripts
+|-- package.json               # Frontend dependencies and scripts
+|-- PRD_CN.md                  # Chinese product requirements draft
+`-- README.md
 ```
 
 ## Quick Start
@@ -173,6 +193,10 @@ API acceptance scripts:
 npm run accept:opportunity-actions:api
 npm run accept:buttons:api
 ```
+
+## Roadmap
+
+The near-term roadmap is tracked in [ROADMAP.md](ROADMAP.md). Current priorities are connector coverage, backend reliability, UI empty-state clarity, and maintainable contributor workflows.
 
 ## Contributing
 
