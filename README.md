@@ -8,6 +8,14 @@ The project combines a React/Vite frontend with a FastAPI backend. It organizes 
 
 ## Demo
 
+Live demo:
+
+```text
+https://gaoyu666.github.io/infoedge/
+```
+
+The hosted demo is a static frontend preview. It shows the workbench shell and empty states without requiring private credentials or a running backend.
+
 Run the local workbench with:
 
 ```bash
@@ -59,8 +67,8 @@ The frontend can run before the backend is configured. Empty-state dashboards ar
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/gaoyu666/xxc1.git
-cd xxc1
+git clone https://github.com/gaoyu666/infoedge.git
+cd infoedge
 ```
 
 ### 2. Start the frontend
@@ -197,6 +205,8 @@ npm run accept:buttons:api
 ## Roadmap
 
 The near-term roadmap is tracked in [ROADMAP.md](ROADMAP.md). Current priorities are connector coverage, backend reliability, UI empty-state clarity, and maintainable contributor workflows.
+
+For deployment details, see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). For local backend services, see [docs/LOCAL_BACKEND.md](docs/LOCAL_BACKEND.md).
 
 ## Contributing
 

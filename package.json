@@ -5,12 +5,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaoyu666/xxc1.git"
+    "url": "https://github.com/gaoyu666/infoedge.git"
   },
   "bugs": {
-    "url": "https://github.com/gaoyu666/xxc1/issues"
+    "url": "https://github.com/gaoyu666/infoedge/issues"
   },
-  "homepage": "https://github.com/gaoyu666/xxc1#readme",
+  "homepage": "https://gaoyu666.github.io/infoedge/",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",

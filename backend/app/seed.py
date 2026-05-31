@@ -66,7 +66,7 @@ SEED_MODELS = [
     {
         "name": "GLM-5.1",
         "provider": "OpenAI-compatible",
-        "endpoint": "http://47.250.90.185:3212/v1",
+        "endpoint": "https://open.bigmodel.cn/api/paas/v4",
         "state": "active",
         "usage": 1200000,
         "cost": 8.5,

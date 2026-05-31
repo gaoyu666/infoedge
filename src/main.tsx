@@ -60,8 +60,7 @@ const API_CANDIDATE_BASES = (() => {
     isLocal ? "http://127.0.0.1:8000" : null,
     isLocal ? "http://127.0.0.1:8002" : null,
     isLocal ? "http://localhost:8000" : null,
-    isLocal ? "http://localhost:8002" : null,
-    `http://47.250.90.185:8000`
+    isLocal ? "http://localhost:8002" : null
   ];
   return [...new Set(list.filter((item): item is string => Boolean(item)))];
 })();
@@ -874,7 +873,7 @@ function usePath() {
 }
 
 function getDisplayApiBase() {
-  return ACTIVE_API_BASE || API_CANDIDATE_BASES[0] || "http://127.0.0.1:8000";
+  return ACTIVE_API_BASE || API_CANDIDATE_BASES[0] || "未配置后端";
 }
 
 function resolveApiPath(path: string) {
@@ -901,8 +900,11 @@ function getErrorMessage(payload: unknown) {
 
 async function apiRequest<T>(path: string, init: RequestInit): Promise<T> {
   const cleanPath = resolveApiPath(path);
-  let lastError = new Error("所有 API 地址暂不可用");
   const candidates = buildApiCandidates();
+  if (!candidates.length) {
+    throw new Error("未配置后端 API。在线 demo 展示静态界面；本地运行请启动 FastAPI 或设置 VITE_API_BASE_URL。");
+  }
+  let lastError = new Error("所有 API 地址暂不可用");
   for (const base of candidates) {
     const url = `${base}/api${cleanPath}`;
     try {
@@ -1778,7 +1780,7 @@ function DashboardPage() {
               <Metric label="热门区域" value="暂无数据" />
             )}
           </div>
-          <SignalPulse />
+          <SignalPulse offline={Boolean(error)} />
         </div>
       </section>
 
@@ -1798,10 +1800,12 @@ function LineTitle({ icon }: { icon: boolean }) {
   return <LineChart size={18} />;
 }
 
-function SignalPulse() {
+function SignalPulse({ offline }: { offline: boolean }) {
   return (
     <p className="metric" style={{ marginTop: "4px" }}>
-      核心模块已经接入后端真实接口；机会列表和机会详情都直接读取 API 数据。
+      {offline
+        ? "在线 demo 当前展示静态界面；启动 FastAPI 或设置 VITE_API_BASE_URL 后会读取真实 API 数据。"
+        : "核心模块已经接入后端真实接口；机会列表和机会详情都直接读取 API 数据。"}
     </p>
   );
 }
